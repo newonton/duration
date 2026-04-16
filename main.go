@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const version = "1.2.0"
+const version = "v1.2.1"
 
 // parseTime parses a string representing a time in various formats.
 //
@@ -51,7 +51,7 @@ func printHelp() {
 
 // printVersion prints the program version.
 func printVersion() {
-	fmt.Printf("duration version %s\n", version)
+	fmt.Println(version)
 }
 
 func main() {
