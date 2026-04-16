@@ -46,7 +46,6 @@ func printHelp() {
 	fmt.Println("  -h, --help      Show this help message")
 	fmt.Println("  -v, --version   Show version")
 	fmt.Println()
-	fmt.Println("Usage:")
 	printUsage()
 }
 
