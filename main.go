@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const version = "v1.2.1"
+const version = "v1.2.2"
 
 // parseTime parses a string representing a time in various formats.
 //
@@ -32,9 +32,10 @@ func returnCursor() {
 
 // printUsage prints the usage information for the duration program.
 func printUsage() {
-	fmt.Println("Formats: 12-hour 'hh:mm AM/PM' or 'hh:mmam/pm' or 24-hour 'HH:mm'.")
-	fmt.Println("Examples: '09:00pm 1:30pm' or '09:00 AM 1:30 PM' or '09:00 13:30'.")
-	fmt.Println("Use 'stop' to stop.")
+	fmt.Println("Usage: <start_time> <end_time>")
+	fmt.Println("Formats: 'HH:mm' (24h) or 'h:mmam/pm' (12h)")
+	fmt.Println("Example: '09:00 13:30' or '9:00am 1:30pm'")
+	fmt.Println("Type 'stop' to exit.")
 }
 
 // printHelp prints the help message with program name, flags, and usage.
