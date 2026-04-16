@@ -8,47 +8,72 @@ import (
 	"time"
 )
 
+// parseTime parses a string representing a time in various formats.
+//
+// Supported formats: "3:04pm", "3:04 PM" (with space, uppercase), "15:04" (24-hour).
 func parseTime(input string) (time.Time, error) {
-	layout := "3:04 PM"
-	return time.Parse(layout, input)
+	input = strings.TrimSpace(input)
+	for _, format := range []string{"15:04", "3:04pm", "3:04 PM"} {
+		if t, err := time.Parse(format, input); err == nil {
+			return t, nil
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("unable to parse time: %s", input)
 }
 
+// returnCursor moves the cursor back to the beginning of the line and clears it.
 func returnCursor() {
 	fmt.Print("\033[F\r\033[K")
 }
 
 func main() {
-	s := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin)
 	var total time.Duration
 
-	fmt.Println("Format 'HH:MM AM/PM'. Use 'stop' to stop.")
+	fmt.Println("Formats: 12-hour 'hh:mm AM/PM' or 'hh:mmam/pm' or 24-hour 'HH:mm'.")
+	fmt.Println("Examples: '09:00pm 1:30pm' or '09:00 AM 1:30 PM' or '09:00 13:30'.")
+	fmt.Println("Use 'stop' to stop.")
 
 	for {
 		fmt.Print("> ")
-		if !s.Scan() {
+		if !scanner.Scan() {
 			break
 		}
-		l := strings.TrimSpace(s.Text())
+		line := strings.TrimSpace(scanner.Text())
 
-		if strings.ToLower(l) == "stop" {
+		if strings.ToLower(line) == "stop" {
 			returnCursor()
-			fmt.Printf("> %s -> %v\n", l, total)
+			fmt.Printf("> %s -> %v\n", line, total)
 			break
 		}
 
-		ps := strings.Fields(l)
-		if len(ps) < 4 {
+		words := strings.Fields(line)
+		if len(words) < 2 {
 			returnCursor()
-			fmt.Printf("> %s -> Invalid format. Use: 'HH:MM AM/PM HH:MM PM'\n", l)
+			fmt.Printf("> %s -> Invalid format. Provide at least 2 times.\n", line)
 			continue
 		}
 
-		start, err1 := parseTime(ps[0] + " " + ps[1])
-		end, err2 := parseTime(ps[2] + " " + ps[3])
+		var ss, es string
+		if len(words) == 2 {
+			ss = words[0]
+			es = words[1]
+		} else if len(words) == 4 {
+			ss = words[0] + " " + words[1]
+			es = words[2] + " " + words[3]
+		} else {
+			returnCursor()
+			fmt.Printf("> %s -> Invalid format.\n", line)
+			continue
+		}
+
+		start, err1 := parseTime(ss)
+		end, err2 := parseTime(es)
 
 		if err1 != nil || err2 != nil {
 			returnCursor()
-			fmt.Printf("> %s -> Invalid time\n", l)
+			fmt.Printf("> %s -> Invalid time format\n", line)
 			continue
 		}
 
@@ -60,6 +85,6 @@ func main() {
 		total += duration
 
 		returnCursor()
-		fmt.Printf("> %s -> %v\n", l, duration)
+		fmt.Printf("> %s -> %v\n", line, duration)
 	}
 }
