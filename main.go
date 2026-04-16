@@ -2,11 +2,14 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
 	"time"
 )
+
+const version = "1.2.0"
 
 // parseTime parses a string representing a time in various formats.
 //
@@ -27,13 +30,54 @@ func returnCursor() {
 	fmt.Print("\033[F\r\033[K")
 }
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	var total time.Duration
-
+// printUsage prints the usage information for the duration program.
+func printUsage() {
 	fmt.Println("Formats: 12-hour 'hh:mm AM/PM' or 'hh:mmam/pm' or 24-hour 'HH:mm'.")
 	fmt.Println("Examples: '09:00pm 1:30pm' or '09:00 AM 1:30 PM' or '09:00 13:30'.")
 	fmt.Println("Use 'stop' to stop.")
+}
+
+// printHelp prints the help message with program name, flags, and usage.
+func printHelp() {
+	fmt.Println("duration - Time duration calculator")
+	fmt.Println()
+	fmt.Println("Flags:")
+	fmt.Println("  -h, --help      Show this help message")
+	fmt.Println("  -v, --version   Show version")
+	fmt.Println()
+	fmt.Println("Usage:")
+	printUsage()
+}
+
+// printVersion prints the program version.
+func printVersion() {
+	fmt.Printf("duration version %s\n", version)
+}
+
+func main() {
+	// Define flags
+	helpFlag := flag.Bool("help", false, "Show help message")
+	versionFlag := flag.Bool("version", false, "Show version")
+
+	// Allow both -h/--help and -v/--version
+	flag.BoolVar(helpFlag, "h", false, "Show help message")
+	flag.BoolVar(versionFlag, "v", false, "Show version")
+
+	flag.Parse()
+
+	// Handle flags
+	if *helpFlag {
+		printHelp()
+		return
+	}
+
+	if *versionFlag {
+		printVersion()
+		return
+	}
+
+	scanner := bufio.NewScanner(os.Stdin)
+	var total time.Duration
 
 	for {
 		fmt.Print("> ")
